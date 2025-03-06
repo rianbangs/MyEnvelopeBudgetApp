@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "MyEnvelopeBudgetApp",
+    "slug": "MyEnvelopeBudgetApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/Envelope_Budget_Icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/Envelope_Budget_Icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/Envelope_Budget_Icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.rianbangs.MyEnvelopeBudgetApp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-sqlite"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3a12c73f-2b64-46f7-9ed3-58709748659c"
+      }
+    }
+  }
+}
