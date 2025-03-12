@@ -7,6 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Footer from "../footer/Footer";
 import { Picker } from '@react-native-picker/picker'; // Import Picker from @react-native-picker/picker
 import RNRestart from 'react-native-restart'; // Import the restart library
+import * as Updates from 'expo-updates'; 
 
 const Budget_Detail_list = ({ route }) => {
   // const { envId } = route.params;
@@ -22,8 +23,8 @@ const Budget_Detail_list = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
   const [description, setDescription] = useState(''); // Description input state
-  const [incomeDate, setIncomeDate] = useState(new Date()); // Income date input state
-  const [entryType, setEntryType] = useState('Allocated Income'); // Entry type input state
+  // const [incomeDate, ] = useState(new Date()); // Income date input state
+  const [entryType, setEntryType] = useState('Allocated Income');   
   const [amount, setAmount] = useState(''); // Amount input state
   const [entryDate, setEntryDate] = useState(new Date()); // Entry date input state
   const [showDatePicker, setShowDatePicker] = useState(false); // Date picker visibility state
@@ -59,6 +60,7 @@ const Budget_Detail_list = ({ route }) => {
       // console.error("Error fetching envelope details:", error);
       
        // Restart the app on any error
+       await Updates.reloadAsync();
        RNRestart.Restart();
     } finally {
       setLoading(false);
@@ -72,6 +74,7 @@ const Budget_Detail_list = ({ route }) => {
     console.log('Entry Type:', entryType);
     console.log('Amount:', amount);
     console.log('Entry Date:', entryDate);
+    
 
     if (!description) {
       setNotificationMessage('Description is required');
@@ -88,12 +91,16 @@ const Budget_Detail_list = ({ route }) => {
 
 
     try {
-      await DB.insertEnvelopeDetail(description, entryType, parseFloat(amount), entryDate.toISOString().split('T')[0], envId); // Call insertEnvelopeDetail with user input
+      const dateAdded = formatDate(entryDate);
+      console.log("Date Added is: >>>>>>>>>>>>>", dateAdded);
+      // await DB.insertEnvelopeDetail(description, entryType, parseFloat(amount), entryDate.toISOString().split('T')[0], envId); // Call insertEnvelopeDetail with user input
+      await DB.insertEnvelopeDetail(description, entryType, parseFloat(amount), dateAdded, envId); // Call insertEnvelopeDetail with user input
       setNotificationMessage('Entry successfully added!');
       setRefresh(!refresh); // Toggle refresh state to trigger re-fetch
       refreshBudList(prev => !prev);
     } catch (e) {
        // Restart the app on any error
+       await Updates.reloadAsync();
        RNRestart.Restart();
       setNotificationMessage('Error adding entry!');
     }
@@ -105,10 +112,27 @@ const Budget_Detail_list = ({ route }) => {
     setEntryDate(new Date()); // Reset input field
   };
 
+  // const handleDateChange = (event, selectedDate) => {
+  //   const currentDate = selectedDate || incomeDate;
+  //   setShowDatePicker(Platform.OS === 'ios');    
+  //   setEntryDate(currentDate);
+  // };
+
   const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || incomeDate;
-    setShowDatePicker(Platform.OS === 'ios');    
+    const currentDate = selectedDate || entryDate;    
+    setShowDatePicker(false); // Close the date picker
     setEntryDate(currentDate);
+    console.log("Entry Date is:******** ", formatDate(currentDate));
+  };
+
+  const formatDate = (date) => {
+    const adjustedDate = new Date(date);
+    adjustedDate.setDate(adjustedDate.getDate() + 1); // Subtract one day
+
+    const year = adjustedDate.getFullYear();
+    const month = String(adjustedDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(adjustedDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const handleAmountChange = (text) => {

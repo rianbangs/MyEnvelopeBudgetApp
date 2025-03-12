@@ -5,6 +5,7 @@ import * as DB from '../../database/envelopeDB';
 import { View, Text, ActivityIndicator, ScrollView, SafeAreaView,TouchableOpacity, Modal, TextInput, AppState } from "react-native";
 import { CommonActions } from '@react-navigation/native';
 import RNRestart from 'react-native-restart'; // Import the restart library
+import * as Updates from 'expo-updates'; 
 
 const Budget_list = ({ navigation,refreshing,initializedDB,setInitializedDB }) => {
   const [data, setData] = useState([]);
@@ -37,6 +38,7 @@ const Budget_list = ({ navigation,refreshing,initializedDB,setInitializedDB }) =
       // console.error("Error fetching envelopes:", error);
      
       // Restart the app on any error
+      await Updates.reloadAsync();
       RNRestart.Restart();
     } 
     finally {

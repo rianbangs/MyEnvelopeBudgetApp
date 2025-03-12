@@ -6,6 +6,7 @@ import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity, Modal, Tex
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Footer from "../footer/Footer";
 import RNRestart from 'react-native-restart'; // Import the restart library
+import * as Updates from 'expo-updates'; 
  
 const Income_list = ({initializedDB , setInitializedDB}) => {
   const [data, setData] = useState([]);
@@ -43,6 +44,8 @@ const Income_list = ({initializedDB , setInitializedDB}) => {
       // console.error("Error fetching incomes:", error);
       
        // Restart the app on any error
+       console.log("Error fetching incomes:-------------- ", error);
+       await Updates.reloadAsync();
        RNRestart.Restart();
     } finally {
       setLoading(false);
@@ -70,7 +73,12 @@ const Income_list = ({initializedDB , setInitializedDB}) => {
 
 
     try {
-      await DB.insertIncome(parseFloat(incomeAmount), incomeDate.toISOString().split('T')[0], incomeDetail); // Call insertIncome with user input
+      const dateAdded = formatDate(incomeDate);
+      console.log("Date Added is: >>>>>>>>>>>>>", dateAdded);
+
+
+      // await DB.insertIncome(parseFloat(incomeAmount), incomeDate.toISOString().split('T')[0], incomeDetail); // Call insertIncome with user input
+      await DB.insertIncome(parseFloat(incomeAmount), dateAdded, incomeDetail); // Call insertIncome with user input
       setNotificationMessage('Income successfully added!');
       setRefresh(!refresh); // Toggle refresh state to trigger re-fetch
     } catch (e) {
@@ -83,10 +91,26 @@ const Income_list = ({initializedDB , setInitializedDB}) => {
     setIncomeDetail(''); // Reset input field
   };
 
+  // const handleDateChange = (event, selectedDate) => {
+  //   const currentDate = selectedDate || incomeDate;
+  //   setShowDatePicker(Platform.OS === 'ios');
+  //   setIncomeDate(currentDate);
+  // };
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || incomeDate;
-    setShowDatePicker(Platform.OS === 'ios');
+    setShowDatePicker(false); // Close the date picker
     setIncomeDate(currentDate);
+  };
+
+
+  const formatDate = (date) => {
+    const adjustedDate = new Date(date);
+    adjustedDate.setDate(adjustedDate.getDate() + 1); // Subtract one day
+
+    const year = adjustedDate.getFullYear();
+    const month = String(adjustedDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(adjustedDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const handleAmountChange = (text) => {
