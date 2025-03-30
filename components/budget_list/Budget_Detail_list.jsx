@@ -100,9 +100,9 @@ const Budget_Detail_list = ({ route }) => {
       refreshBudList(prev => !prev);
     } catch (e) {
        // Restart the app on any error
-       await Updates.reloadAsync();
-       RNRestart.Restart();
-      setNotificationMessage('Error adding entry!');
+      //  await Updates.reloadAsync();
+      //  RNRestart.Restart();
+      // setNotificationMessage('Error adding entry!');
     }
     setNotificationVisible(true); // Show notification modal
     setModalVisible(false); // Close input modal
